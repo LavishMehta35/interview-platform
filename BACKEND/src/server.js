@@ -1,16 +1,31 @@
-const dotenv = require("dotenv/config")
-const express = require("express");
+import express from "express";
+import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 
-const PORT = process.env.PORT || 4006
+const PORT = process.env.PORT || 4006;
 
-app.get("/" , (req , res) => {
+const __dirname = path.resolve();
+
+app.get("/api", (req, res) => {
     res.json({
-        message : "how are you sweetheart"
-    })
-})
+        message: "how are you sweetheart"
+    });
+});
 
-app.listen(PORT , () => {
-    console.log(`server run at port no ${PORT}`)
-})
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../FRONTEND/dist")));
+
+    app.get("/{*any}", (req, res) => {
+        res.sendFile(
+            path.join(__dirname, "../FRONTEND/dist/index.html")
+        );
+    });
+}
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
